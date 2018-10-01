@@ -1,0 +1,21 @@
+{
+  "name": "inverted-index",
+  "version": "1.0.0",
+  "description": "Makes an inverted index using TypeScript and RxJS",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^3.1.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "npm run build",
+    "build": "tsc"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "Matt Pace",
+  "license": "ISC"
+}
