@@ -26,8 +26,9 @@ const lineToDocumentLine = map<string, IDocumentLine>((value: string, index: num
     }
 });
 
+const wordMatcher = /\w+/g;
+
 const documentLineToDocumentWord = mergeMap<IDocumentLine, IDocumentWord>((value: IDocumentLine, index: number) => {
-    const wordMatcher = /\w+/g;
     const documentWords: IDocumentWord[] = [];
     let match: RegExpExecArray | null;
 
