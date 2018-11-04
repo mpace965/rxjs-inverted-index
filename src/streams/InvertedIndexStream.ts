@@ -1,5 +1,5 @@
 import { ReadLine } from 'readline';
-import { from, fromEvent, Observable } from 'rxjs';
+import { from, fromEvent, Observable, pipe } from 'rxjs';
 import { map, mergeMap, reduce, takeUntil } from 'rxjs/operators';
 
 interface IDocumentLine {
@@ -51,12 +51,16 @@ const documentWordToInvertedIndex = reduce<IDocumentWord, InvertedIndex>((acc: I
     new Map<string, IDocumentPosition[]>()
 );
 
+export const lineToInvertedIndex = pipe(
+    lineToDocumentLine,
+    documentLineToDocumentWord,
+    documentWordToInvertedIndex
+);
+
 export function fromReadLine(rl: ReadLine): Observable<InvertedIndex> {
     return fromEvent<string>(rl, 'line').pipe(
         takeUntil(fromEvent<void>(rl, 'close')),
-        lineToDocumentLine,
-        documentLineToDocumentWord,
-        documentWordToInvertedIndex
+        lineToInvertedIndex
     );
 }
 
