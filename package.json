@@ -4,8 +4,11 @@
   "description": "Makes an inverted index using TypeScript and RxJS",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
-  "dependencies": {},
+  "dependencies": {
+    "rxjs": "^6.3.3"
+  },
   "devDependencies": {
+    "@types/node": "^10.12.2",
     "typescript": "^3.1.1"
   },
   "scripts": {
