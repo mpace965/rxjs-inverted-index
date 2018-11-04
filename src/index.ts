@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as readline from 'readline';
-import { fromEvent, Observable } from 'rxjs';
-import { map, reduce, takeUntil } from 'rxjs/operators';
+import { from, fromEvent, Observable } from 'rxjs';
+import { map, mergeMap, reduce, takeUntil } from 'rxjs/operators';
 
 interface IDocumentLine {
     lineNumber: number;
@@ -13,7 +13,12 @@ interface IDocumentPosition {
     linePosition: number
 };
 
-type InvertedIndex = Map<string, IDocumentPosition>;
+interface IDocumentWord {
+    word: string;
+    position: IDocumentPosition;
+};
+
+type InvertedIndex = Map<string, IDocumentPosition[]>;
 
 const rl = readline.createInterface({
     input: fs.createReadStream('sample.txt'),
@@ -33,10 +38,39 @@ const documentLineStream: Observable<IDocumentLine> = lineStream.pipe(
     })
 );
 
-const invertedIndexStream: Observable<InvertedIndex> = documentLineStream.pipe(
-    reduce<IDocumentLine, InvertedIndex>((acc: InvertedIndex, value: IDocumentLine) => {
-        return acc;
-    }, new Map<string, IDocumentPosition>())
+const documentWordStream: Observable<IDocumentWord> = documentLineStream.pipe(
+    mergeMap<IDocumentLine, IDocumentWord>((value: IDocumentLine, index: number) => {
+        const wordMatcher = /\w+/g;
+        const documentWords: IDocumentWord[] = [];
+        let match: RegExpExecArray | null;
+
+        while ((match = wordMatcher.exec(value.lineText)) !== null) {
+            const word = match[0];
+            const position: IDocumentPosition = {
+                lineNumber: value.lineNumber,
+                linePosition: match.index + 1
+            };
+            const documentWord: IDocumentWord = { word, position };
+
+            documentWords.push(documentWord);
+        }
+
+        return from(documentWords);
+    })
 );
 
-documentLineStream.subscribe(x => console.log(x));
+const invertedIndexStream: Observable<InvertedIndex> = documentWordStream.pipe(
+    reduce<IDocumentWord, InvertedIndex>((acc: InvertedIndex, value: IDocumentWord) =>
+        insertWithDefault(acc, value.word, value.position),
+        new Map<string, IDocumentPosition[]>()
+    )
+);
+
+invertedIndexStream.subscribe(x => console.log(x));
+
+function insertWithDefault(index: InvertedIndex, key: string, value: IDocumentPosition) {
+    const currentValue: IDocumentPosition[] = index.get(key) || [];
+    const newValue = currentValue.concat(value);
+    index.set(key, newValue);
+    return index;
+}
