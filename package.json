@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Makes an inverted index using TypeScript and RxJS",
   "main": "./dist/index.js",
+  "bin": {
+    "inverted-index": "./dist/index.js"
+  },
   "typings": "./dist/index.d.ts",
   "dependencies": {
     "rxjs": "^6.3.3"
