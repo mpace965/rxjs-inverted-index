@@ -2,6 +2,7 @@
 
 import * as fs from 'fs';
 import * as readline from 'readline';
+import * as util from 'util';
 import { fromReadLine } from './streams/InvertedIndexStream';
 import { argParse, IInvertedIndexArgs } from './ArgumentParser';
 
@@ -12,4 +13,8 @@ const rl = readline.createInterface({
     crlfDelay: Infinity
 });
 
-fromReadLine(rl).subscribe(x => console.log(x));
+fromReadLine(rl).subscribe(x =>
+    console.log(util.inspect(x, {
+        maxArrayLength: Infinity
+    }))
+);
