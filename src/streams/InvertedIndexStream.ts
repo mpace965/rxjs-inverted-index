@@ -66,8 +66,8 @@ export function fromReadLine(rl: ReadLine): Observable<InvertedIndex> {
 
 function insertWithDefault(index: InvertedIndex, key: string, value: IDocumentPosition) {
     const currentValue: IDocumentPosition[] = index.get(key) || [];
-    const newValue = currentValue.concat(value);
-    index.set(key, newValue);
+    currentValue.push(value);
+    index.set(key, currentValue);
 
     return index;
 }
